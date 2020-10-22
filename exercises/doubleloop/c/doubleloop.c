@@ -79,6 +79,10 @@ int main(int argc, char **argv)
         {
         #pragma acc loop
         for (i = 1; i < nx + 1; i++) {
+            /* This copying memory to and back from GPU during every iteration
+             * of the outer loops.
+             * This is very inefficient and can be done better.
+             * emory managements is discussed during the next day. */
             #pragma acc loop
             for (j = 1; j < ny + 1; j++) {
                 unew[i][j] = factor * (u[i-1][j] + u[i+1][j]
