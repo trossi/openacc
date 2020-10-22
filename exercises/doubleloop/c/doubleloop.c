@@ -48,6 +48,7 @@ void init(double ** arr, int nx, int ny)
 
 int main(int argc, char **argv)
 {
+    struct timespec time0, time1;
     double eps;
 
     double ** u, ** unew;
@@ -70,6 +71,7 @@ int main(int argc, char **argv)
     t_start = clock();
 
     /* TODO: Parallelize this */
+    clock_gettime(CLOCK_REALTIME, &time0);
     for (iter = 0; iter < niter; iter++) {
         for (i = 1; i < nx + 1; i++)
             for (j = 1; j < ny + 1; j++) {
@@ -82,6 +84,12 @@ int main(int argc, char **argv)
                      unew[i][j-1] + unew[i][j+1]);
             }
     }
+    clock_gettime(CLOCK_REALTIME, &time1);
+
+    double time = (time1.tv_sec - time0.tv_sec)
+                  + (time1.tv_nsec - time0.tv_nsec)*1e-9;
+
+    printf("Time: %.6f s\n", time);
 
     /* Compute a reference sum, do not parallelize this! */
     sum = 0.0;
