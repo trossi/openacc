@@ -1,0 +1,35 @@
+pgcc -Minfo=all sum.c -o sum.exe
+main:
+     49, FMA (fused multiply-add) instruction(s) generated
+pgcc -fast -Minfo=all sum.c -o sum-fast.exe
+main:
+     20, Loop not fused: function call before adjacent loop
+         Loop not vectorized: may not be beneficial
+         Loop unrolled 4 times
+         FMA (fused multiply-add) instruction(s) generated
+     31, Loop not fused: function call before adjacent loop
+         Generated vector simd code for the loop
+     43, Loop not fused: function call before adjacent loop
+         Generated vector simd code for the loop containing reductions
+pgcc -acc -Minfo=all sum.c -o sum-acc.exe
+main:
+     20, FMA (fused multiply-add) instruction(s) generated
+     30, Generating Tesla code
+         31, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     30, Generating implicit copyin(vecB[:]) [if not already present]
+         Generating implicit copyout(vecC[:]) [if not already present]
+         Generating implicit copyin(vecA[:]) [if not already present]
+pgcc -acc -fast -Minfo=all sum.c -o sum-acc-fast.exe
+main:
+     20, Loop not fused: function call before adjacent loop
+         Loop not vectorized: may not be beneficial
+         Loop unrolled 4 times
+         FMA (fused multiply-add) instruction(s) generated
+     30, Generating Tesla code
+         31, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     30, Generating implicit copyout(vecC[:]) [if not already present]
+         Generating implicit copyin(vecB[:],vecA[:]) [if not already present]
+     31, Loop not fused: no successor loop
+         Generated vector simd code for the loop
+     43, Loop not fused: function call before adjacent loop
+         Generated vector simd code for the loop containing reductions
