@@ -1,0 +1,161 @@
+pgcc -Minfo=all doubleloop.c -o main.exe
+main:
+    120, FMA (fused multiply-add) instruction(s) generated
+pgcc -fast -Minfo=all doubleloop.c -o main-fast.exe
+malloc_2d:
+     18, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+init:
+     38, Memory zero idiom, loop replaced by call to __c_mzero8
+     41, Loop not fused: function call before adjacent loop
+         Loop not vectorized: non-stride-1 array reference
+         Loop unrolled 4 times
+     44, Memory set idiom, loop replaced by call to __c_mset8
+main:
+     67, malloc_2d inlined, size=9 (inline) file doubleloop.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+     68, malloc_2d inlined, size=9 (inline) file doubleloop.c (11)
+          18, Loop not vectorized: data dependency
+              Loop unrolled 4 times
+     70, init inlined, size=16 (inline) file doubleloop.c (35)
+          38, Memory zero idiom, loop replaced by call to __c_mzero8
+          41, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          44, Memory set idiom, loop replaced by call to __c_mset8
+     71, init inlined, size=16 (inline) file doubleloop.c (35)
+          38, Memory zero idiom, loop replaced by call to __c_mzero8
+          41, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          44, Memory set idiom, loop replaced by call to __c_mset8
+     77, Loop not fused: function call before adjacent loop
+         Loop not vectorized/parallelized: loop count too small
+         FMA (fused multiply-add) instruction(s) generated
+     81, Loop not fused: dependence chain to sibling loop
+     83, Loop not vectorized: data dependency
+         Loop unrolled 2 times
+     91, Loop not vectorized: data dependency
+         Loop unrolled 2 times
+    107, Loop not fused: function call before adjacent loop
+    108, Generated vector simd code for the loop containing reductions
+    111, free_2d inlined, size=3 (inline) file doubleloop.c (28)
+    112, free_2d inlined, size=3 (inline) file doubleloop.c (28)
+pgcc -acc -Minfo=all doubleloop.c -o main-acc.exe
+init:
+     38, Memory zero idiom, loop replaced by call to __c_mzero8
+     44, Memory set idiom, loop replaced by call to __c_mset8
+main:
+     77, FMA (fused multiply-add) instruction(s) generated
+     78, Generating Tesla code
+         81, #pragma acc loop gang /* blockIdx.x */
+         83, #pragma acc loop vector(128) /* threadIdx.x */
+         89, #pragma acc loop gang /* blockIdx.x */
+         91, #pragma acc loop vector(128) /* threadIdx.x */
+     78, Generating implicit copyout(unew[1:16384][1:16384]) [if not already present]
+         Generating implicit copyin(unew[:16386][:16386],u[:16386][:16386]) [if not already present]
+         Generating implicit copyout(u[1:16384][1:16384]) [if not already present]
+     83, Loop is parallelizable
+     91, Loop is parallelizable
+pgcc -acc -fast -Minfo=all doubleloop.c -o main-acc-fast.exe
+malloc_2d:
+     18, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+init:
+     38, Memory zero idiom, loop replaced by call to __c_mzero8
+     41, Loop not fused: function call before adjacent loop
+         Loop not vectorized: non-stride-1 array reference
+         Loop unrolled 4 times
+     44, Memory set idiom, loop replaced by call to __c_mset8
+main:
+     67, malloc_2d inlined, size=9 (inline) file doubleloop.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+     68, malloc_2d inlined, size=9 (inline) file doubleloop.c (11)
+          18, Loop not vectorized: data dependency
+              Loop unrolled 4 times
+     70, init inlined, size=16 (inline) file doubleloop.c (35)
+          38, Memory zero idiom, loop replaced by call to __c_mzero8
+          41, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          44, Memory set idiom, loop replaced by call to __c_mset8
+     71, init inlined, size=16 (inline) file doubleloop.c (35)
+          38, Memory zero idiom, loop replaced by call to __c_mzero8
+          41, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          44, Memory set idiom, loop replaced by call to __c_mset8
+     77, Loop not vectorized/parallelized: contains call
+         FMA (fused multiply-add) instruction(s) generated
+     78, Generating Tesla code
+         81, #pragma acc loop gang /* blockIdx.x */
+         83, #pragma acc loop vector(128) /* threadIdx.x */
+         89, #pragma acc loop gang /* blockIdx.x */
+         91, #pragma acc loop vector(128) /* threadIdx.x */
+     78, Generating implicit copyin(unew[:16386][:16386]) [if not already present]
+         Generating implicit copyout(unew[1:16384][1:16384]) [if not already present]
+         Generating implicit copyin(u[:16386][:16386]) [if not already present]
+         Generating implicit copyout(u[1:16384][1:16384]) [if not already present]
+     81, Loop not fused: dependence chain to sibling loop
+     83, Loop is parallelizable
+         Loop not vectorized: data dependency
+         Loop unrolled 2 times
+     89, Loop not fused: no successor loop
+     91, Loop is parallelizable
+         Loop not vectorized: data dependency
+         Loop unrolled 2 times
+    107, Loop not fused: function call before adjacent loop
+    108, Generated vector simd code for the loop containing reductions
+    111, free_2d inlined, size=3 (inline) file doubleloop.c (28)
+    112, free_2d inlined, size=3 (inline) file doubleloop.c (28)
+pgcc -acc -fast -ta=nvidia:cc70,managed -Minfo=all doubleloop.c -o main-managed.exe
+malloc_2d:
+     18, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+init:
+     38, Memory zero idiom, loop replaced by call to __c_mzero8
+     41, Loop not fused: function call before adjacent loop
+         Loop not vectorized: non-stride-1 array reference
+         Loop unrolled 4 times
+     44, Memory set idiom, loop replaced by call to __c_mset8
+main:
+     67, malloc_2d inlined, size=9 (inline) file doubleloop.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+     68, malloc_2d inlined, size=9 (inline) file doubleloop.c (11)
+          18, Loop not vectorized: data dependency
+              Loop unrolled 4 times
+     70, init inlined, size=16 (inline) file doubleloop.c (35)
+          38, Memory zero idiom, loop replaced by call to __c_mzero8
+          41, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          44, Memory set idiom, loop replaced by call to __c_mset8
+     71, init inlined, size=16 (inline) file doubleloop.c (35)
+          38, Memory zero idiom, loop replaced by call to __c_mzero8
+          41, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          44, Memory set idiom, loop replaced by call to __c_mset8
+     77, Loop not vectorized/parallelized: contains call
+     78, Generating Tesla code
+         81, #pragma acc loop gang /* blockIdx.x */
+         83, #pragma acc loop vector(128) /* threadIdx.x */
+         89, #pragma acc loop gang /* blockIdx.x */
+         91, #pragma acc loop vector(128) /* threadIdx.x */
+     78, Generating implicit copyin(unew[:16386][:16386]) [if not already present]
+         Generating implicit copyout(unew[1:16384][1:16384]) [if not already present]
+         Generating implicit copyin(u[:16386][:16386]) [if not already present]
+         Generating implicit copyout(u[1:16384][1:16384]) [if not already present]
+     83, Loop is parallelizable
+     91, Loop is parallelizable
+    107, Loop not fused: function call before adjacent loop
+         FMA (fused multiply-add) instruction(s) generated
+    108, Generated vector simd code for the loop containing reductions
+    111, free_2d inlined, size=3 (inline) file doubleloop.c (28)
+    112, free_2d inlined, size=3 (inline) file doubleloop.c (28)

@@ -1,0 +1,70 @@
+to 22.10.2020 16.07.10 +0300
+
+CUDA Driver Version:           11010
+NVRM version:                  NVIDIA UNIX x86_64 Kernel Module  455.23.05  Fri Sep 18 19:37:12 UTC 2020
+
+Device Number:                 0
+Device Name:                   Tesla V100-SXM2-32GB
+Device Revision Number:        7.0
+Global Memory Size:            34089730048
+Number of Multiprocessors:     80
+Concurrent Copy and Execution: Yes
+Total Constant Memory:         65536
+Total Shared Memory per Block: 49152
+Registers per Block:           65536
+Warp Size:                     32
+Maximum Threads per Block:     1024
+Maximum Block Dimensions:      1024, 1024, 64
+Maximum Grid Dimensions:       2147483647 x 65535 x 65535
+Maximum Memory Pitch:          2147483647B
+Texture Alignment:             512B
+Clock Rate:                    1530 MHz
+Execution Timeout:             No
+Integrated Device:             No
+Can Map Host Memory:           Yes
+Compute Mode:                  default
+Concurrent Kernels:            Yes
+ECC Enabled:                   Yes
+Memory Clock Rate:             877 MHz
+Memory Bus Width:              4096 bits
+L2 Cache Size:                 6291456 bytes
+Max Threads Per SMP:           2048
+Async Engines:                 5
+Unified Addressing:            Yes
+Managed Memory:                Yes
+Concurrent Managed Memory:     Yes
+Preemption Supported:          Yes
+Cooperative Launch:            Yes
+  Multi-Device:                Yes
+PGI Default Target:            -ta=tesla:cc70
+
+---- ./main.exe
+Array size: 16384x16384
+Time: 3.167947 s
+Stencil: Time =3.8100000000000001 sec, MLups/s=140.9110005249343658, sum=23935.0781250000000000
+---- end
+
+---- ./main-fast.exe
+Array size: 16384x16384
+Time: 1.456562 s
+Stencil: Time =1.6399999999999999 sec, MLups/s=327.3603121951219350, sum=23935.0781250000000000
+---- end
+
+---- ./main-acc.exe
+Array size: 16384x16384
+Time: 5.878170 s
+Stencil: Time =6.2100000000000000 sec, MLups/s=86.4526428341384872, sum=23935.0598449707031250
+---- end
+
+---- ./main-acc-fast.exe
+Array size: 16384x16384
+Time: 5.875508 s
+Stencil: Time =6.0599999999999996 sec, MLups/s=88.5925597359735946, sum=23935.0613098144531250
+---- end
+
+---- ./main-managed.exe
+Array size: 16384x16384
+Time: 0.526306 s
+Stencil: Time =1.1699999999999999 sec, MLups/s=458.8640273504273637, sum=23931.8799133300781250
+---- end
+
