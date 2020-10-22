@@ -55,12 +55,14 @@ int main(int argc, char **argv)
     const double factor = 0.25;
     const int niter = 2;
     double mlups = 0e0;
-    int nx = 1022, ny = 1022;
+    int nx = 1<<14, ny = 1<<14;
     clock_t t_start, t_end;
     double dt;
     double sum;
     int i, j;
     int iter;
+
+    printf("Array size: %dx%d\n", nx, ny);
 
     u = malloc_2d(nx+2, ny+2);
     unew = malloc_2d(nx+2, ny+2);
@@ -70,19 +72,28 @@ int main(int argc, char **argv)
 
     t_start = clock();
 
-    /* TODO: Parallelize this */
+    /* Parallelized loops */
     clock_gettime(CLOCK_REALTIME, &time0);
     for (iter = 0; iter < niter; iter++) {
-        for (i = 1; i < nx + 1; i++)
+        #pragma acc parallel
+        {
+        #pragma acc loop
+        for (i = 1; i < nx + 1; i++) {
+            #pragma acc loop
             for (j = 1; j < ny + 1; j++) {
                 unew[i][j] = factor * (u[i-1][j] + u[i+1][j]
                                        + u[i][j-1] + u[i][j+1]);
+            }
         }
-        for (i = 1; i < nx + 1; i++)
+        #pragma acc loop
+        for (i = 1; i < nx + 1; i++) {
+            #pragma acc loop
             for (j = 1; j < ny + 1; j++) {
                 u[i][j] = factor * (unew[i-1][j] + unew[i+1][j]
                                     + unew[i][j-1] + unew[i][j+1]);
             }
+        }
+        }
     }
     clock_gettime(CLOCK_REALTIME, &time1);
 
