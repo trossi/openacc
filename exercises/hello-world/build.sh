@@ -8,3 +8,5 @@ pgcc -acc hello.c -o hello-c-acc.exe
 
 pgf90 hello.F90 -o hello-f.exe
 pgf90 -acc hello.F90 -o hello-f-acc.exe
+
+pgf90 -acc -fast -Minfo=opt -ta=tesla:cc70,managed -Minfo=accel hello.F90 -o hello-f-acc-test.exe

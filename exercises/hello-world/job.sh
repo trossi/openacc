@@ -31,6 +31,9 @@ echo "---- hello f acc"
 srun ./hello-f-acc.exe
 echo -e "---- end\n"
 
+echo "---- hello f acc test"
+srun ./hello-f-acc-test.exe
+echo -e "---- end\n"
 
 # Submit to the batch job queue with the command:
 #  sbatch job.sh
