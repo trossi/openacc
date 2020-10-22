@@ -2,7 +2,7 @@
 
 # module load pgi/19.7
 
-all: main.exe main-fast.exe main-acc.exe main-acc-fast.exe
+all: main.exe main-fast.exe main-acc.exe main-acc-fast.exe main-managed.exe
 
 main.exe: doubleloop.c
 	pgcc -Minfo=all $^ -o $@
@@ -15,6 +15,9 @@ main-acc.exe: doubleloop.c
 
 main-acc-fast.exe: doubleloop.c
 	pgcc -acc -fast -Minfo=all $^ -o $@
+
+main-managed.exe: doubleloop.c
+	pgcc -acc -fast -ta=nvidia:cc70,managed -Minfo=all $^ -o $@
 
 clean:
 	rm *.exe

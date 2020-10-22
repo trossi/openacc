@@ -17,6 +17,8 @@ function run {
     echo -e "---- end\n"
 }
 
+date
+
 pgaccelinfo -v
 echo
 
@@ -24,3 +26,4 @@ run ./main.exe
 run ./main-fast.exe
 run ./main-acc.exe
 run ./main-acc-fast.exe
+run ./main-managed.exe
