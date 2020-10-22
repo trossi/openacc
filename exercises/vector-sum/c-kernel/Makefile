@@ -1,4 +1,6 @@
-#module load pgi/19.7
+# make all |& tee make.log
+
+# module load pgi/19.7
 
 all: sum.exe sum-fast.exe sum-acc.exe sum-acc-fast.exe
 

@@ -6,6 +6,7 @@
 ##SBATCH --partition=gputest
 #SBATCH --partition=gpu
 #SBATCH --reservation=gpuhackathon
+#SBATCH -o job.log
 
 #module load pgi/19.7
 module load pgi/19.7 cuda/10.1.168

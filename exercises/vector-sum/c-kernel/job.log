@@ -1,0 +1,63 @@
+
+CUDA Driver Version:           11010
+NVRM version:                  NVIDIA UNIX x86_64 Kernel Module  455.23.05  Fri Sep 18 19:37:12 UTC 2020
+
+Device Number:                 0
+Device Name:                   Tesla V100-SXM2-32GB
+Device Revision Number:        7.0
+Global Memory Size:            34089730048
+Number of Multiprocessors:     80
+Concurrent Copy and Execution: Yes
+Total Constant Memory:         65536
+Total Shared Memory per Block: 49152
+Registers per Block:           65536
+Warp Size:                     32
+Maximum Threads per Block:     1024
+Maximum Block Dimensions:      1024, 1024, 64
+Maximum Grid Dimensions:       2147483647 x 65535 x 65535
+Maximum Memory Pitch:          2147483647B
+Texture Alignment:             512B
+Clock Rate:                    1530 MHz
+Execution Timeout:             No
+Integrated Device:             No
+Can Map Host Memory:           Yes
+Compute Mode:                  default
+Concurrent Kernels:            Yes
+ECC Enabled:                   Yes
+Memory Clock Rate:             877 MHz
+Memory Bus Width:              4096 bits
+L2 Cache Size:                 6291456 bytes
+Max Threads Per SMP:           2048
+Async Engines:                 5
+Unified Addressing:            Yes
+Managed Memory:                Yes
+Concurrent Managed Memory:     Yes
+Preemption Supported:          Yes
+Cooperative Launch:            Yes
+  Multi-Device:                Yes
+PGI Default Target:            -ta=tesla:cc70
+
+---- ./sum.exe
+Array size: 33554432.
+Time: 0.121438 s
+Reduction sum: 3495253.3318945313803852
+---- end
+
+---- ./sum-fast.exe
+Array size: 33554432.
+Time: 0.096377 s
+Reduction sum: 3495253.3318242905661464
+---- end
+
+---- ./sum-acc.exe
+Array size: 33554432.
+Time: 0.319855 s
+Reduction sum: 3495253.3318945313803852
+---- end
+
+---- ./sum-acc-fast.exe
+Array size: 33554432.
+Time: 0.315376 s
+Reduction sum: 3495253.3318242905661464
+---- end
+
