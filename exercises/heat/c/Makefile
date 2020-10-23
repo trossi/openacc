@@ -1,5 +1,5 @@
 CC=pgcc
-CCFLAGS=-g -O3 -acc -ta=tesla,kepler+
+CCFLAGS=-g -O3 -acc -ta=tesla,kepler+ -Minfo=accel
 RUN=
 
 EXE=heat.exe
