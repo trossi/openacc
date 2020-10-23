@@ -35,25 +35,28 @@ void init(float **arr, int nx, int ny)
 {
     int i, j;
 
-    /* TODO: Implement data initialization with OpenACC on device */
+    /* Implement data initialization with OpenACC on device */
+    #pragma acc parallel loop collapse(2) present(arr)
     for (i = 0; i < nx + 2; i++) {
         for (j = 0; j < ny + 2; j++) {
             arr[i][j] = 0e0;
         }
     }
 
-    /* TODO: Implement data initialization with OpenACC on device */
+    /* Implement data initialization with OpenACC on device */
+    #pragma acc parallel loop present(arr)
     for (i = 0; i < nx + 2; i++) {
         arr[i][ny + 1] = 1e0;
     }
 
-    /* TODO: Implement data initialization with OpenACC on device */
+    /* Implement data initialization with OpenACC on device */
+    #pragma acc parallel loop present(arr)
     for (i = 0; i < ny + 2; i++) {
         arr[nx + 1][i] = 1e0;
     }
 }
 
-void update(float **newarr, float **oldarr, float *norm, int nx, int ny)
+void update(float restrict **newarr, float restrict **oldarr, float *norm, int nx, int ny)
 {
     int i, j;
     const float factor = 0.25;
@@ -61,7 +64,8 @@ void update(float **newarr, float **oldarr, float *norm, int nx, int ny)
 
     if (norm != NULL) {
         lnorm = 0;
-        /* TODO: Implement computation with OpenACC on device */
+        /* Implement computation with OpenACC on device */
+        #pragma acc parallel loop collapse(2) reduction(max:lnorm) present(newarr, oldarr)
         for (i = 1; i < nx + 1; i++) {
             for (j = 1; j < ny + 1; j++) {
                 newarr[i][j] = factor * (oldarr[i - 1][j] + oldarr[i + 1][j] +
@@ -71,7 +75,8 @@ void update(float **newarr, float **oldarr, float *norm, int nx, int ny)
         }
         *norm = lnorm;
     } else {
-        /* TODO: Implement computation with OpenACC on device */
+        /* Implement computation with OpenACC on device */
+        #pragma acc parallel loop collapse(2) present(newarr, oldarr)
         for (i = 1; i < nx + 1; i++) {
             for (j = 1; j < ny + 1; j++) {
                 newarr[i][j] = factor * (oldarr[i - 1][j] + oldarr[i + 1][j] +
@@ -89,6 +94,7 @@ void usage(pname)
 
 int main(int argc, char **argv)
 {
+    struct timespec time0, time1;
     float eps;
 
     float **u, ** unew;
@@ -123,8 +129,10 @@ int main(int argc, char **argv)
     u = malloc_2d(nx + 2, ny + 2);
     unew = malloc_2d(nx + 2, ny + 2);
 
-    /* TODO: Initialize data region on device */
-
+    clock_gettime(CLOCK_REALTIME, &time0);
+    /* Initialize data region on device */
+    #pragma acc data create(u[:(nx+2)][:(ny+2)], unew[:(nx+2)][:(ny+2)])
+    {
     init(u, nx, ny);
     init(unew, nx, ny);
 
@@ -140,7 +148,13 @@ int main(int argc, char **argv)
             printf(": norm, eps= %18.16f %18.16f\n", norm, eps);
         }
     }
+    }
+    clock_gettime(CLOCK_REALTIME, &time1);
 
+    double time = (time1.tv_sec - time0.tv_sec)
+                  + (time1.tv_nsec - time0.tv_nsec)*1e-9;
+
+    printf("Time: %.6f s\n", time);
 
     free_2d(u);
     free_2d(unew);
