@@ -1,0 +1,115 @@
+pe 23.10.2020 12.35.33 +0300
+
+CUDA Driver Version:           11010
+NVRM version:                  NVIDIA UNIX x86_64 Kernel Module  455.23.05  Fri Sep 18 19:37:12 UTC 2020
+
+Device Number:                 0
+Device Name:                   Tesla V100-SXM2-32GB
+Device Revision Number:        7.0
+Global Memory Size:            34089730048
+Number of Multiprocessors:     80
+Concurrent Copy and Execution: Yes
+Total Constant Memory:         65536
+Total Shared Memory per Block: 49152
+Registers per Block:           65536
+Warp Size:                     32
+Maximum Threads per Block:     1024
+Maximum Block Dimensions:      1024, 1024, 64
+Maximum Grid Dimensions:       2147483647 x 65535 x 65535
+Maximum Memory Pitch:          2147483647B
+Texture Alignment:             512B
+Clock Rate:                    1530 MHz
+Execution Timeout:             No
+Integrated Device:             No
+Can Map Host Memory:           Yes
+Compute Mode:                  default
+Concurrent Kernels:            Yes
+ECC Enabled:                   Yes
+Memory Clock Rate:             877 MHz
+Memory Bus Width:              4096 bits
+L2 Cache Size:                 6291456 bytes
+Max Threads Per SMP:           2048
+Async Engines:                 5
+Unified Addressing:            Yes
+Managed Memory:                Yes
+Concurrent Managed Memory:     Yes
+Preemption Supported:          Yes
+Cooperative Launch:            Yes
+  Multi-Device:                Yes
+PGI Default Target:            -ta=tesla:cc70
+
+---- ./main.exe
+Stencil: nx,ny,maxiter,eps=2400 2400 1999 0.0005000000237487
+: norm, eps= 0.0035946369171143 0.0005000000237487
+: norm, eps= 0.0018006563186646 0.0005000000237487
+: norm, eps= 0.0012004375457764 0.0005000000237487
+: norm, eps= 0.0009000599384308 0.0005000000237487
+: norm, eps= 0.0007199943065643 0.0005000000237487
+: norm, eps= 0.0006000995635986 0.0005000000237487
+: norm, eps= 0.0005144774913788 0.0005000000237487
+: norm, eps= 0.0004987120628357 0.0005000000237487
+Time: 14.000947 s
+'Stencil: norm =0.0004987120628357 with iter = 722
+'Stencil: Time =13.9700002670288086 sec, MLups/s=297.6893310546875000
+---- end
+
+---- ./main-fast.exe
+Stencil: nx,ny,maxiter,eps=2400 2400 1999 0.0005000000237487
+: norm, eps= 0.0035946369171143 0.0005000000237487
+: norm, eps= 0.0018006563186646 0.0005000000237487
+: norm, eps= 0.0012004375457764 0.0005000000237487
+: norm, eps= 0.0009000599384308 0.0005000000237487
+: norm, eps= 0.0007199943065643 0.0005000000237487
+: norm, eps= 0.0006000995635986 0.0005000000237487
+: norm, eps= 0.0005144774913788 0.0005000000237487
+: norm, eps= 0.0004987120628357 0.0005000000237487
+Time: 3.905014 s
+'Stencil: norm =0.0004987120628357 with iter = 722
+'Stencil: Time =3.8900001049041748 sec, MLups/s=1069.0797119140625000
+---- end
+
+---- ./main-acc.exe
+Stencil: nx,ny,maxiter,eps=2400 2400 1999 0.0005000000237487
+: norm, eps= 0.0035946369171143 0.0005000000237487
+: norm, eps= 0.0018006563186646 0.0005000000237487
+: norm, eps= 0.0012004375457764 0.0005000000237487
+: norm, eps= 0.0009000599384308 0.0005000000237487
+: norm, eps= 0.0007199943065643 0.0005000000237487
+: norm, eps= 0.0006000995635986 0.0005000000237487
+: norm, eps= 0.0005144774913788 0.0005000000237487
+: norm, eps= 0.0004987120628357 0.0005000000237487
+Time: 0.247148 s
+'Stencil: norm =0.0004987120628357 with iter = 722
+'Stencil: Time =0.1400000005960464 sec, MLups/s=29705.1445312500000000
+---- end
+
+---- ./main-acc-fast.exe
+Stencil: nx,ny,maxiter,eps=2400 2400 1999 0.0005000000237487
+: norm, eps= 0.0035946369171143 0.0005000000237487
+: norm, eps= 0.0018006563186646 0.0005000000237487
+: norm, eps= 0.0012004375457764 0.0005000000237487
+: norm, eps= 0.0009000599384308 0.0005000000237487
+: norm, eps= 0.0007199943065643 0.0005000000237487
+: norm, eps= 0.0006000995635986 0.0005000000237487
+: norm, eps= 0.0005144774913788 0.0005000000237487
+: norm, eps= 0.0004987120628357 0.0005000000237487
+Time: 0.234135 s
+'Stencil: norm =0.0004987120628357 with iter = 722
+'Stencil: Time =0.1299999952316284 sec, MLups/s=31990.1562500000000000
+---- end
+
+---- ./main-managed.exe
+Stencil: nx,ny,maxiter,eps=2400 2400 1999 0.0005000000237487
+: norm, eps= 0.0035946369171143 0.0005000000237487
+: norm, eps= 0.0018006563186646 0.0005000000237487
+: norm, eps= 0.0012004375457764 0.0005000000237487
+: norm, eps= 0.0009000599384308 0.0005000000237487
+: norm, eps= 0.0007199943065643 0.0005000000237487
+: norm, eps= 0.0006000995635986 0.0005000000237487
+: norm, eps= 0.0005144774913788 0.0005000000237487
+: norm, eps= 0.0004987120628357 0.0005000000237487
+Time: 0.131271 s
+'Stencil: norm =0.0004987120628357 with iter = 722
+'Stencil: Time =0.1199999973177910 sec, MLups/s=34656.0039062500000000
+---- end
+

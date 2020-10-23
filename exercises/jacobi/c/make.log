@@ -1,0 +1,174 @@
+pgcc -Minfo=all jacobi.c -o main.exe
+main:
+    169, FMA (fused multiply-add) instruction(s) generated
+pgcc -fast -Minfo=all jacobi.c -o main-fast.exe
+malloc_2d:
+     18, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+init:
+     41, Memory zero idiom, loop replaced by call to __c_mzero4
+     48, Loop not fused: function call before adjacent loop
+         Loop not vectorized: non-stride-1 array reference
+         Loop unrolled 4 times
+     54, Memory set idiom, loop replaced by call to __c_mset4
+update:
+     69, Loop not fused: no successor loop
+     70, Loop not vectorized: data dependency
+         Loop unrolled 2 times
+     81, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+main:
+    123, usage inlined, size=2 (inline) file jacobi.c (90)
+    129, malloc_2d inlined, size=9 (inline) file jacobi.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+    130, malloc_2d inlined, size=9 (inline) file jacobi.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+    136, init inlined, size=17 (inline) file jacobi.c (35)
+          41, Memory zero idiom, loop replaced by call to __c_mzero4
+          48, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          54, Memory set idiom, loop replaced by call to __c_mset4
+    137, init inlined, size=17 (inline) file jacobi.c (35)
+          41, Memory zero idiom, loop replaced by call to __c_mzero4
+          48, Loop not fused: function call before adjacent loop
+              Loop not vectorized: non-stride-1 array reference
+              Loop unrolled 4 times
+          54, Memory set idiom, loop replaced by call to __c_mset4
+    143, Loop not vectorized/parallelized: potential early exits
+         FMA (fused multiply-add) instruction(s) generated
+    144, update inlined, size=36 (inline) file jacobi.c (60)
+          80, Loop not fused: dependence chain to sibling loop
+          81, Loop not vectorized: data dependency
+              Loop unrolled 4 times
+    145, update inlined, size=36 (inline) file jacobi.c (60)
+          69, Loop not fused: complex flow graph
+          70, Loop not vectorized: data dependency
+              Loop unrolled 2 times
+    159, free_2d inlined, size=3 (inline) file jacobi.c (28)
+    160, free_2d inlined, size=3 (inline) file jacobi.c (28)
+pgcc -acc -Minfo=all jacobi.c -o main-acc.exe
+init:
+     39, Generating present(arr[:][:])
+         Generating Tesla code
+         40, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         41,   /* blockIdx.x threadIdx.x collapsed */
+     41, Memory zero idiom, loop replaced by call to __c_mzero4
+     47, Generating present(arr[:][:])
+         Generating Tesla code
+         48, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     53, Generating present(arr[:][:])
+         Generating Tesla code
+         54, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     54, Memory set idiom, loop replaced by call to __c_mset4
+update:
+     68, Generating present(oldarr[:][:],newarr[:][:])
+         Generating Tesla code
+         69, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         70,   /* blockIdx.x threadIdx.x collapsed */
+             Generating reduction(max:lnorm)
+     68, Generating implicit copy(lnorm) [if not already present]
+     79, Generating present(oldarr[:][:],newarr[:][:])
+         Generating Tesla code
+         80, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         81,   /* blockIdx.x threadIdx.x collapsed */
+main:
+    134, Generating create(unew[:nx+2][:ny+2],u[:nx+2][:ny+2]) [if not already present]
+    143, FMA (fused multiply-add) instruction(s) generated
+pgcc -acc -fast -Minfo=all jacobi.c -o main-acc-fast.exe
+malloc_2d:
+     18, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+init:
+     39, Generating present(arr[:][:])
+         Generating Tesla code
+         40, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         41,   /* blockIdx.x threadIdx.x collapsed */
+     41, Memory zero idiom, loop replaced by call to __c_mzero4
+     47, Generating present(arr[:][:])
+         Generating Tesla code
+         48, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     48, Loop not fused: no successor loop
+         Loop not vectorized: non-stride-1 array reference
+         Loop unrolled 4 times
+     53, Generating present(arr[:][:])
+         Generating Tesla code
+         54, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     54, Memory set idiom, loop replaced by call to __c_mset4
+update:
+     68, Generating present(oldarr[:][:],newarr[:][:])
+         Generating Tesla code
+         69, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         70,   /* blockIdx.x threadIdx.x collapsed */
+             Generating reduction(max:lnorm)
+     68, Generating implicit copy(lnorm) [if not already present]
+     69, Loop not fused: no successor loop
+     70, Loop not vectorized: data dependency
+         Loop unrolled 2 times
+     79, Generating present(oldarr[:][:],newarr[:][:])
+         Generating Tesla code
+         80, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         81,   /* blockIdx.x threadIdx.x collapsed */
+     80, Loop not fused: no successor loop
+     81, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+main:
+    123, usage inlined, size=2 (inline) file jacobi.c (90)
+    129, malloc_2d inlined, size=9 (inline) file jacobi.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+              FMA (fused multiply-add) instruction(s) generated
+    130, malloc_2d inlined, size=9 (inline) file jacobi.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+    134, Generating create(unew[:nx+2][:ny+2],u[:nx+2][:ny+2]) [if not already present]
+    143, Loop not vectorized/parallelized: potential early exits
+    159, free_2d inlined, size=3 (inline) file jacobi.c (28)
+    160, free_2d inlined, size=3 (inline) file jacobi.c (28)
+pgcc -acc -fast -ta=nvidia:cc70,managed -Minfo=all jacobi.c -o main-managed.exe
+malloc_2d:
+     18, Loop not vectorized: data dependency
+         Loop unrolled 4 times
+init:
+     39, Generating present(arr[:][:])
+         Generating Tesla code
+         40, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         41,   /* blockIdx.x threadIdx.x collapsed */
+     47, Generating present(arr[:][:])
+         Generating Tesla code
+         48, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+     53, Generating present(arr[:][:])
+         Generating Tesla code
+         54, #pragma acc loop gang, vector(128) /* blockIdx.x threadIdx.x */
+update:
+     68, Generating present(oldarr[:][:],newarr[:][:])
+         Generating Tesla code
+         69, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         70,   /* blockIdx.x threadIdx.x collapsed */
+             Generating reduction(max:lnorm)
+     68, Generating implicit copy(lnorm) [if not already present]
+     79, Generating present(oldarr[:][:],newarr[:][:])
+         Generating Tesla code
+         80, #pragma acc loop gang, vector(128) collapse(2) /* blockIdx.x threadIdx.x */
+         81,   /* blockIdx.x threadIdx.x collapsed */
+main:
+    123, usage inlined, size=2 (inline) file jacobi.c (90)
+    129, malloc_2d inlined, size=9 (inline) file jacobi.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+              FMA (fused multiply-add) instruction(s) generated
+    130, malloc_2d inlined, size=9 (inline) file jacobi.c (11)
+          18, Loop not fused: function call before adjacent loop
+              Loop not vectorized: data dependency
+              Loop unrolled 4 times
+    134, Generating create(unew[:nx+2][:ny+2],u[:nx+2][:ny+2]) [if not already present]
+    143, Loop not vectorized/parallelized: potential early exits
+    159, free_2d inlined, size=3 (inline) file jacobi.c (28)
+    160, free_2d inlined, size=3 (inline) file jacobi.c (28)
