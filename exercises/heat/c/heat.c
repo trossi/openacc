@@ -115,6 +115,8 @@ void initialize(field * temperature1, field * temperature2)
     
     copy_field(temperature1, temperature2);
 
+#pragma acc enter data copyin(temperature1->data[:temperature1->nx+2][:temperature1->ny+2])
+#pragma acc enter data copyin(temperature2->data[:temperature2->nx+2][:temperature2->ny+2])
 }
 
 void evolve(field * curr, field * prev, double a, double dt)
@@ -137,8 +139,9 @@ void evolve(field * curr, field * prev, double a, double dt)
   dy2 = prev->dy2;
 
   /* Computation on device with OpenACC */
-  #pragma acc kernels
+#pragma acc kernels present(cdata, pdata)
   {
+#pragma acc loop collapse(2)
     for (i = 1; i < nx + 1; i++)
         for (j = 1; j < ny + 1; j++) {
             cdata[i][j] = pdata[i][j] + a * dt *
@@ -154,7 +157,9 @@ void evolve(field * curr, field * prev, double a, double dt)
 
 void finalize(field * temperature1, field * temperature2)
 {
+#pragma acc exit data delete(temperature1->data)
     free_2d(temperature1->data);
+#pragma acc exit data delete(temperature2->data)
     free_2d(temperature2->data);
 }
 
@@ -168,6 +173,8 @@ void output(field * temperature, int iter)
     double **full_data;
 
     int i;
+
+#pragma acc update host(temperature->data[0:temperature->nx+2][0:temperature->ny+2])
 
     height = temperature->nx;
     width = temperature->ny;
