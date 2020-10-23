@@ -7,12 +7,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "heat.h"
 
 
 int main(int argc, char **argv)
 {
+    struct timespec time0, time1;
+
     double a = 0.5;             //!< Diffusion constant
     field current, previous;    //!< Current and previous temperature fields
 
@@ -77,14 +80,26 @@ int main(int argc, char **argv)
         (2.0 * a * (current.dx2 + current.dy2));
 
     // Time evolve
+    double time = 0.0;
+    clock_gettime(CLOCK_REALTIME, &time0);
     for (iter = 1; iter < nsteps; iter++) {
         evolve(&current, &previous, a, dt);
+        clock_gettime(CLOCK_REALTIME, &time1);
+        time += (time1.tv_sec - time0.tv_sec)
+                + (time1.tv_nsec - time0.tv_nsec)*1e-9;
         // output every 10 iteration
         if (iter % image_interval == 0)
             output(&current, iter);
+        clock_gettime(CLOCK_REALTIME, &time0);
         // make current field to be previous for next iteration step
         swap_fields(&current, &previous);
     }
+    clock_gettime(CLOCK_REALTIME, &time1);
+
+    time += (time1.tv_sec - time0.tv_sec)
+            + (time1.tv_nsec - time0.tv_nsec)*1e-9;
+
+    printf("Time (excluding png print): %.6f s\n", time);
 
     finalize(&current, &previous);
     return 0;
