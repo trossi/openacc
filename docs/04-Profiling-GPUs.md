@@ -18,16 +18,90 @@ lang:   en
 
 # Profiling tools {.section}
 
-
 # NVIDIA NVPROF profiler
 
-- NVIDIA released the Nsight recently for profiling. One of the main reasons for
-  the new tool is scalability and, of course, new features
-    - It is included with CUDA since 10.x
+- NVPROF is a command-line profiler that is included in OpenACC and CUDA
+  toolkits
+    - Can also do basic CPU profiling (CUDA 7.5 and newer)
 - GPU profiling capabilities
     - High-level usage statistics
     - Timeline collection
     - Analysis metrics
+
+
+# CPU example
+
+```bash
+$ nvprof --cpu-profiling on --cpu-profiling-mode top-down ./cg
+
+...
+
+======== CPU profiling result (top down):
+Time(%) Time      Name
+79.56%  26.7635s  main
+74.58%  25.0876s  | matvec(matrix const &, vector const &, vector const &)
+ 4.89%  1.64575s  | allocate_3d_poisson_matrix(matrix&, int)
+ 0.09%  30.105ms  | free_matrix(matrix&)
+ 0.09%  30.105ms  |   munmap
+15.96%  5.36875s  waxpby(double, vector const &, double, vector const &, vector const &)
+ 4.18%  1.40491s  dot(vector const &, vector const &)
+ 0.27%  90.315ms  __c_mset8
+ 0.03%  10.035ms  free_vector(vector&)
+ 0.03%  10.035ms    munmap
+
+======== Data collected at 100Hz frequency
+```
+# GPU example
+
+```bash
+$ nvprof ./cg
+...
+
+==22639== Profiling result:
+Time(%)     Time Calls      Avg       Min       Max  Name
+84.96%  3.73571s  101  36.987ms  36.952ms  37.003ms  matvec(matrix const &, ...
+ 6.18%  271.72ms  302  899.73us  598.47us  905.44us  waxpby(double, vector ...
+ 5.40%  237.64ms  389  610.91us     800ns  1.5132ms  [CUDA memcpy HtoD]
+ 2.92%  128.37ms  200  641.87us  535.49us  771.52us  dot(vector const &, ...
+ 0.53%  23.338ms  200  116.69us  116.03us  117.54us  dot(vector const &, ...
+ 0.01%  427.78us  200  2.1380us  1.8880us  11.488us  [CUDA memcpy DtoH]
+
+==22639== API calls:
+Time(%)     Time Calls      Avg       Min       Max  Name
+85.25%  4.01764s  812  4.9478ms  2.2690us  37.097ms  cuStreamSynchronize
+ 6.45%  304.19ms    1  304.19ms  304.19ms  304.19ms  cuDevicePrimaryCtxRetain
+ 3.43%  161.86ms    1  161.86ms  161.86ms  161.86ms  cuDevicePrimaryCtxRelease
+...
+```
+
+# NVIDIA visual profiler
+
+- Nvprof is an older profiling tool
+
+![](img/nvidia-visual-profiler.png){.center}
+
+
+# Details on OpenACC compute construct
+
+![](img/profiler-compute-construct.png){.center}
+
+
+# Details on memory copy
+
+![](img/profiler-memory-copy.png){.center}
+
+
+
+# NVIDIA profiler
+
+- NVIDIA released the Nsight recently for profiling. One of the main reasons for
+  the new tool is scalability and, of course, new features
+    - It is included with CUDA since 10.x (some commands based on newer version)
+- GPU profiling capabilities
+    - High-level usage statistics
+    - Timeline collection
+    - Analysis metrics
+    - Roofline model
 
 
 # OpenACC example
@@ -97,29 +171,31 @@ tpc__cycles_in_region       # of cycles in user-defined region
 ```
 
 # Nsight Compute CLI (I)
+<small>
 
 ```
 srun -n 1  nv-nsight-cu-cli ./jacobi
 ...
   update_65_gpu, 2020-Oct-18 23:42:06, Context 1, Stream 13
    Section: GPU Speed Of Light
-    ---------------------------------------------------------------------- --------------- ------------------------------
-    DRAM Frequency                                                           cycle/usecond                         849.78
-    SM Frequency                                                             cycle/nsecond                           1.25
-    Elapsed Cycles                                                                   cycle                        151,948
-    Memory [%]                                                                           %                          60.03
-    SOL DRAM                                                                             %                          43.34
-    Duration                                                                       usecond                         121.63
-    SOL L1/TEX Cache                                                                     %                          61.33
-    SOL L2 Cache                                                                         %                          36.73
-    SM Active Cycles                                                                 cycle                     148,450.91
-    SM [%]                                                                               %                          44.05
-    ---------------------------------------------------------------------- --------------- ------------------------------
+    ------------------------------------------------------------ --------------- --------------------------
+    DRAM Frequency                                                 cycle/usecond                    849.78
+    SM Frequency                                                   cycle/nsecond                      1.25
+    Elapsed Cycles                                                         cycle                   151,948
+    Memory [%]                                                                 %                     60.03
+    SOL DRAM                                                                   %                     43.34
+    Duration                                                             usecond                    121.63
+    SOL L1/TEX Cache                                                           %                     61.33
+    SOL L2 Cache                                                               %                     36.73
+    SM Active Cycles                                                        cycle               148,450.91
+    SM [%]                                                                      %                    44.05
+    ------------------------------------------------------------ --------------- --------------------------
     WRN   Memory is more heavily utilized than Compute: Look at the Memory Workload Analysis report section to see
-          where the memory system bottleneck is. Check memory replay (coalescing) metrics to make sure you're
+          where the memory system bottleneck is. Check memory replay (coalescing) metrics to make sure you are
           efficiently utilizing the bytes transferred. Also consider whether it is possible to do more work per memory
           access (kernel fusion) or whether there are values you can (re)compute.
 ```
+</small>
 
 # Nsight Compute CLI (II)
 
@@ -153,23 +229,6 @@ srun -n 1  nv-nsight-cu-cli ./jacobi
 
 - Nsight Compute GUI does not support OpenACC
 </small>
-
-
-# NVIDIA visual profiler
-
-- Nvprof is an older profiling tool
-
-![](img/nvidia-visual-profiler.png){.center}
-
-
-# Details on OpenACC compute construct
-
-![](img/profiler-compute-construct.png){.center}
-
-
-# Details on memory copy
-
-![](img/profiler-memory-copy.png){.center}
 
 
 # Optimization {.section}
