@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
     char input_file[64];        //!< Name of the optional input file
 
-    int image_interval = 10;    //!< Image output interval
+    int image_interval = 1000;    //!< Image output interval
 
     int iter;
 
