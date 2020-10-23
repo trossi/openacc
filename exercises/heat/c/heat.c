@@ -120,7 +120,7 @@ void initialize(field * temperature1, field * temperature2)
 void evolve(field * curr, field * prev, double a, double dt)
 {
   int i, j, nx, ny;
-  double ** cdata, ** pdata, dx2, dy2;
+  double ** restrict cdata, ** restrict pdata, dx2, dy2;
 
   // Determine the temperature field at next time step
   // As we have fixed boundary conditions, the outermost gridpoints
@@ -136,7 +136,9 @@ void evolve(field * curr, field * prev, double a, double dt)
   dx2 = prev->dx2;
   dy2 = prev->dy2;
 
-  /* TODO: Implement computation on device with OpenACC */
+  /* Computation on device with OpenACC */
+  #pragma acc kernels
+  {
     for (i = 1; i < nx + 1; i++)
         for (j = 1; j < ny + 1; j++) {
             cdata[i][j] = pdata[i][j] + a * dt *
@@ -147,8 +149,7 @@ void evolve(field * curr, field * prev, double a, double dt)
                   2.0 * pdata[i][  j  ] +
                         pdata[i][j - 1]) / dy2);
         }
-    // *INDENT-ON*
-
+  }
 }
 
 void finalize(field * temperature1, field * temperature2)
