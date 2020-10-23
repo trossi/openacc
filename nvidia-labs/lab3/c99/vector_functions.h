@@ -9,7 +9,7 @@ double dot(const vector& x, const vector& y) {
   double *restrict xcoefs=x.coefs;
   double *restrict ycoefs=y.coefs;
 
-#pragma acc kernels
+#pragma acc kernels present(xcoefs,ycoefs)
   {
     for(int i=0;i<n;i++) {
       sum+=xcoefs[i]*ycoefs[i];
@@ -24,7 +24,7 @@ void waxpby(double alpha, const vector &x, double beta, const vector &y, const v
   double *restrict ycoefs=y.coefs;
   double *restrict wcoefs=w.coefs;
 
-#pragma acc kernels
+#pragma acc kernels present(xcoefs,ycoefs,wcoefs)
   {
     for(int i=0;i<n;i++) {
       wcoefs[i]=alpha*xcoefs[i]+beta*ycoefs[i];

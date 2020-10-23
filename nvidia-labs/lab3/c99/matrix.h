@@ -53,6 +53,8 @@ void allocate_3d_poisson_matrix(matrix &A, int N) {
 
   A.row_offsets[num_rows]=nnz;
   A.nnz=nnz;
+#pragma acc enter data copyin(A)
+#pragma acc enter data copyin(A.row_offsets[:num_rows+1],A.cols[:nnz],A.coefs[:nnz])
 }
 
 void free_matrix(matrix &A) {
@@ -60,6 +62,8 @@ void free_matrix(matrix &A) {
   unsigned int * cols=A.cols;
   double * coefs=A.coefs;
 
+#pragma acc exit data delete(A.row_offsets,A.cols,A.coefs)
+#pragma acc exit data delete(A)
   free(row_offsets);
   free(cols);
   free(coefs);
